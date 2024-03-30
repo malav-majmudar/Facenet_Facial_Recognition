@@ -1,3 +1,15 @@
 test/
 train_raw/
 facenet_keras.h5
+__pycache__
+data
+embeddings/
+ROC
+tests
+frames
+unclean-tests
+*.MOV
+*.jpeg
+*.jpg
+*.rest
+*.ipynb
