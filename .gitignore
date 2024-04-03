@@ -1,6 +1,5 @@
 test/
 train_raw/
-facenet_keras.h5
 __pycache__
 data
 embeddings/
