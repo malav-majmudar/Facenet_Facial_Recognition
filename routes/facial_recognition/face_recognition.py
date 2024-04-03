@@ -1,11 +1,7 @@
 import os
 import json
 import pickle
-import socketio
 import numpy as np
-from io import BytesIO
-from PIL import Image
-from time import sleep
 from keras import models
 from helpers import face_detection
 from collections import defaultdict
@@ -54,7 +50,7 @@ def add_face():
 
 
 @face_recognition.route('/remove_user', methods = ['POST'])
-def sign_out():
+def remove_user():
     name = request.json['name']
     with open('./data/registered_faces.pkl', 'rb') as f:
         registered_faces = pickle.load(f)
@@ -69,14 +65,10 @@ def sign_out():
     return f'{name} Removed', 200
 
 
-@face_recognition.route('/classify', methods = ['POST'])
+@face_recognition.route('/classify', methods = ['GET'])
 def classify_face():
-    image = request.files['image']
 
-    image_path = './frames/' + image.filename
-    image.save(image_path)
-
-    faces = face_detection.extract_faces(image_path)
+    faces = face_detection.extract_faces('./frames/frame.jpeg')
 
     if faces is None:
         return 'No Faces Detected'
@@ -102,7 +94,7 @@ def classify_face():
                 min_distance = distance
                 identity = name
         
-        if min_distance < 10:
+        if min_distance < 12:
             prob = round((np.exp(-min_distance) /  np.exp(distances).sum(axis=0)) * 100, 4)
             identity = (identity, prob)
             print(identity)
@@ -113,25 +105,3 @@ def classify_face():
         identities.append(identity)
 
     return identities
-
-@face_recognition.route('get_frame')
-def get_frame():
-
-    sio = socketio.SimpleClient()
-    sio.connect('https://low-issue-vocals-msgid.trycloudflare.com/')
-
-    io = BytesIO()
-
-    count = 150
-    i = 0
-    while(True):
-        data = sio.receive()[1]
-        if count == 0:
-            io.write(data)
-            image = Image.open(io)
-            image.save(f'./dumbass/{i}.png')
-            i += 1
-            count = 150
-            io = BytesIO()
-        count -= 1
-        
