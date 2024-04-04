@@ -22,6 +22,9 @@ def add_face():
     if not os.path.exists(name_dir):
         os.makedirs(name_dir)
 
+    if not os.path.exists('./data'):
+        os.makedirs('./data')
+
     image_path = name_dir + image.filename
     image.save(image_path)
 
