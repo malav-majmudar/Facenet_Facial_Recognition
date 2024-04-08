@@ -74,7 +74,7 @@ def classify_face():
     faces = face_detection.extract_faces('./frames/frame.jpeg')
 
     if faces is None:
-        return 'No Faces Detected'
+        return {'identities': [('No Faces Detected')]}
     
     with open('./data/registered_faces.pkl', 'rb') as f:
         registered_faces = pickle.load(f)
@@ -102,9 +102,9 @@ def classify_face():
             identity = (identity, prob)
             print(identity)
         else:
-            identity = 'Unknown'
+            identity = ('Unknown')
             print(identity)
 
         identities.append(identity)
 
-    return identities
+    return {'identities': identities}
