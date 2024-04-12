@@ -6,10 +6,28 @@ from keras import models
 from helpers import face_detection
 from collections import defaultdict
 from flask import Blueprint, request
+from PIL import Image
+import io
+import base64
 
 model = models.load_model('./models/facenet_keras.h5')
 
 face_recognition = Blueprint('face_recognition', __name__)
+
+@face_recognition.route('/get_users', methods = ['GET'])
+def get_users():
+    try:
+        with open('./data/registered_faces.pkl', 'rb') as f:
+            registered_faces = pickle.load(f)
+        f.close()
+    except:
+        return {'message': 'No Users Found'}, 404
+    
+    users = {}
+    for name in registered_faces:
+        users[name] = registered_faces[name]['face_pixels']
+    
+    return users, 200
 
 @face_recognition.route('/add_user', methods = ['POST'])
 def add_face():
@@ -38,9 +56,16 @@ def add_face():
     face = face_detection.extract_face(image_path)
 
     if face is not None:
-        registered_faces[name]['face_pixels'] = face
         face_embedding = face_detection.get_embedding(model, face)
         registered_faces[name]['face_embedding'] = face_embedding
+
+        face = Image.fromarray(face)
+        binary_stream = io.BytesIO()
+        face.save(binary_stream, format='JPEG')
+        byte_data = binary_stream.getvalue()
+        base64_encoded_string = base64.b64encode(byte_data).decode('utf-8')
+        registered_faces[name]['face_pixels'] = base64_encoded_string
+
     else:
         return f"{name} NOT Added", 400
     
