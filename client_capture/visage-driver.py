@@ -26,10 +26,10 @@ while True:
             elif indentity == 'Unknwon':
                 print('Unfriendly Face Detected')
             elif indentity != 'Unknwon':
-                #door_status = {"lock": "unlock"}
-                #r = requests.post('http://visage-lock.local:80/lock_door', json=door_status, headers={'Content-Type': 'application/json'})
+                door_status = {"lock": "unlock"}
+                r = requests.post('http://visage-lock.local:80/lock_door', json=door_status, headers={'Content-Type': 'application/json'})
                 print(f'{indentity[0]} unlocked door')
                 sleep(10)
-                # door_status = {"lock": "lock"}
-                #r = requests.post('http://visage-lock.local:80/lock_door', json=door_status, headers={'Content-Type': 'application/json'})
+                door_status = {"lock": "lock"}
+                r = requests.post('http://visage-lock.local:80/lock_door', json=door_status, headers={'Content-Type': 'application/json'})
                 print(f'{indentity[0]} locked door')
